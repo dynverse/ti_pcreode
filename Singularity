@@ -12,6 +12,7 @@ From: dynverse/dynwrap:py2.7
 
 %post
     chmod -R a+r /code
+    chmod a+x /code
     git clone https://github.com/KenLauLab/pCreode.git && pip install pCreode
 
 %files
