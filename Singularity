@@ -10,13 +10,12 @@ From: dynverse/dynwrap:py2.7
 %labels
     version 0.1.1
 
-%post
-    chmod -R a+r /code
-    chmod a+x /code
-    git clone https://github.com/KenLauLab/pCreode.git && pip install pCreode
-
 %files
     . /code
+
+%post
+    chmod -R 755 '/code'
+    git clone https://github.com/KenLauLab/pCreode.git && pip install pCreode
 
 %runscript
     exec python /code/run.py
