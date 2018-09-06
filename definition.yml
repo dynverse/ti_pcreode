@@ -1,5 +1,6 @@
 id: pcreode
 docker_repository: dynverse/ti_pcreode
+singularity_collection: 1561
 container_url: https://github.com/dynverse/ti_pcreode
 name: pCreode
 type: algorithm
