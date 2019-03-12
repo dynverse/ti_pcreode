@@ -2,6 +2,10 @@
 
 import dynclipy
 task = dynclipy.main()
+task = dynclipy.main(
+  ["--dataset", "/code/example.h5", "--output", "/mnt/output"],
+  "/code/definition.yml"
+)
 
 import pandas as pd
 import numpy as np
@@ -43,13 +47,13 @@ out_graph, out_ids = pcreode.pCreode(
   density = density,
   noise = noise,
   target = target,
-  file_path = "/ti/workspace/.",
+  file_path = "/",
   num_runs = params["num_runs"],
   mute = True
 )
 
 # score graphs, returns a vector of ranks by similarity
-graph_ranks = pcreode.pCreode_Scoring(data = pca_reduced_data, file_path = "/ti/workspace/.", num_graphs = params["num_runs"], mute=True)
+graph_ranks = pcreode.pCreode_Scoring(data = pca_reduced_data, file_path = "/", num_graphs = params["num_runs"], mute=True)
 # select most representative graph
 gid = graph_ranks[0]
 
@@ -58,7 +62,7 @@ gid = graph_ranks[0]
 # the only thing that is available is a cell graph of only a subset of cells
 # so we use this cell graph as milestone network, and then project all cells onto this
 analysis = pcreode.Analysis(
-  file_path = "/ti/workspace/.",
+  file_path = "/",
   graph_id = gid,
   data = pca_reduced_data,
   density = density,
@@ -74,12 +78,11 @@ dataset = dynclipy.wrap_data(cell_ids = expression.index)
 # save dimred
 dimred = pd.DataFrame(pca_reduced_data)
 dimred["cell_id"] = expression.index
-dataset.add_dimred(dimred = dimred)
 
 # get milestone network based on cell_graph
 # get the upper triangle of the adjacency, and use it to construct the network
 cell_graph = pd.DataFrame(
-  pcreode.return_weighted_adj(pca_reduced_data, "/ti/workspace/.", gid),
+  pcreode.return_weighted_adj(pca_reduced_data, "/", gid),
   index = expression.index[analysis.node_data_indices],
   columns = expression.index[analysis.node_data_indices],
 )
@@ -103,6 +106,7 @@ milestone_network["from"] = ["MILESTONE_" + cell_id for cell_id in milestone_net
 milestone_network["to"] = ["MILESTONE_" + cell_id for cell_id in milestone_network["to"]]
 
 dataset.add_dimred_projection(
+  dimred = dimred,
   milestone_network = milestone_network,
   dimred_milestones = dimred_milestones
 )
