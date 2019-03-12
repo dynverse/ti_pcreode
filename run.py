@@ -1,3 +1,8 @@
+#!/usr/local/bin/python
+
+import dynclipy
+task = dynclipy.main()
+
 import pandas as pd
 import numpy as np
 import json
@@ -9,8 +14,8 @@ checkpoints = {}
 
 #   ____________________________________________________________________________
 #   Load data                                                               ####
-expression = pd.read_csv("/ti/input/expression.csv", index_col=[0])
-params = json.load(open("/ti/input/params.json", "r"))
+expression = task["expression"]
+params = task["params"]
 
 checkpoints["method_afterpreproc"] = time.time()
 
@@ -64,16 +69,12 @@ checkpoints["method_aftermethod"] = time.time()
 
 #   ____________________________________________________________________________
 #   Save output                                                             ####
-# save cell_ids
-cell_ids = pd.DataFrame({
-  "cell_ids": expression.index
-})
-cell_ids.to_csv("/ti/output/cell_ids.csv", index=False)
+dataset = dynclipy.wrap_data(cell_ids = expression.index)
 
 # save dimred
 dimred = pd.DataFrame(pca_reduced_data)
 dimred["cell_id"] = expression.index
-dimred.to_csv("/ti/output/dimred.csv", index=False)
+dataset.add_dimred(dimred = dimred)
 
 # get milestone network based on cell_graph
 # get the upper triangle of the adjacency, and use it to construct the network
@@ -83,7 +84,6 @@ cell_graph = pd.DataFrame(
   columns = expression.index[analysis.node_data_indices],
 )
 cell_graph = cell_graph.where(np.triu(np.ones(cell_graph.shape)).astype(np.bool))
-
 milestone_network = cell_graph.stack().reset_index()
 milestone_network.columns = ["from", "to", "weight"]
 milestone_network = milestone_network.query("weight > 0").drop("weight", 1)
@@ -98,11 +98,16 @@ dimred_milestones = dimred_milestones.rename(columns={"cell_id":"milestone_id"})
 
 # rename cells to milestones and save
 dimred_milestones["milestone_id"] = ["MILESTONE_" + cell_id for cell_id in dimred_milestones["milestone_id"]]
-dimred_milestones.to_csv("/ti/output/dimred_milestones.csv", index=False)
 
 milestone_network["from"] = ["MILESTONE_" + cell_id for cell_id in milestone_network["from"]]
 milestone_network["to"] = ["MILESTONE_" + cell_id for cell_id in milestone_network["to"]]
-milestone_network.to_csv("/ti/output/milestone_network.csv", index = False)
+
+dataset.add_dimred_projection(
+  milestone_network = milestone_network,
+  dimred_milestones = dimred_milestones
+)
 
 # timings
-json.dump(checkpoints, open("/ti/output/timings.json", "w"))
+dataset.add_timings(timings = checkpoints)
+
+dataset.write_output(task["output"])
