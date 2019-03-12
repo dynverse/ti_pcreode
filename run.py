@@ -2,10 +2,10 @@
 
 import dynclipy
 task = dynclipy.main()
-task = dynclipy.main(
-  ["--dataset", "/code/example.h5", "--output", "/mnt/output"],
-  "/code/definition.yml"
-)
+# task = dynclipy.main(
+#   ["--dataset", "/code/example.h5", "--output", "/mnt/output"],
+#   "/code/definition.yml"
+# )
 
 import pandas as pd
 import numpy as np
