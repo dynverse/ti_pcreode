@@ -34,10 +34,7 @@ wrapper:
   - multifurcation
   - binary_tree
   - tree
-  example: /code/example.R
-  input_required:
-  - expression
-
+  input_required: expression
 
 parameters:
   - id: n_pca_components
