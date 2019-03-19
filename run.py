@@ -19,7 +19,7 @@ checkpoints = {}
 #   ____________________________________________________________________________
 #   Load data                                                               ####
 expression = task["expression"]
-params = task["params"]
+parameters = task["parameters"]
 
 checkpoints["method_afterpreproc"] = time.time()
 
@@ -31,7 +31,7 @@ checkpoints["method_afterpreproc"] = time.time()
 data_pca = pcreode.PCA(expression)
 data_pca.get_pca()
 
-pca_reduced_data = data_pca.pca_set_components(min(params["n_pca_components"],expression.shape[1]))
+pca_reduced_data = data_pca.pca_set_components(min(parameters["n_pca_components"],expression.shape[1]))
 
 # calculate density
 dens = pcreode.Density(pca_reduced_data)
@@ -48,12 +48,12 @@ out_graph, out_ids = pcreode.pCreode(
   noise = noise,
   target = target,
   file_path = "/",
-  num_runs = params["num_runs"],
+  num_runs = parameters["num_runs"],
   mute = True
 )
 
 # score graphs, returns a vector of ranks by similarity
-graph_ranks = pcreode.pCreode_Scoring(data = pca_reduced_data, file_path = "/", num_graphs = params["num_runs"], mute=True)
+graph_ranks = pcreode.pCreode_Scoring(data = pca_reduced_data, file_path = "/", num_graphs = parameters["num_runs"], mute=True)
 # select most representative graph
 gid = graph_ranks[0]
 
