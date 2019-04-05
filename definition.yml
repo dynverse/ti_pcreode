@@ -1,50 +1,53 @@
-id: pcreode
-docker_repository: dynverse/ti_pcreode
-singularity_collection: 1561
-container_url: https://github.com/dynverse/ti_pcreode
-name: pCreode
-source: tool
-platform: Python
+method:
+  id: pcreode
+  name: pCreode
+  source: tool
+  platform: Python
+  url: https://github.com/KenLauLab/pCreode
+  license: GPL-2
+  authors:
+  - given: Charles A.
+    family: Herring
+    email: charles.a.herring@vanderbilt.edu
+    github: herrinca
+  - given: Ken S.
+    family: Lau
+    email: ken.s.lau@vanderbilt.edu
+    github: KenLauLab
+
+manuscript:
+  doi: 10.1016/j.cels.2017.10.012
+  google_scholar_cluster_id: '1665065308896440028'
+  publication_date: '2017-11-15'
+
+container:
+  url: https://github.com/dynverse/ti_pcreode
+  docker: dynverse/ti_pcreode
+
+wrapper:
+  type: dimred_projection
+  topology_inference: free
+  trajectory_types:
+  - linear
+  - bifurcation
+  - convergence
+  - multifurcation
+  - binary_tree
+  - tree
+  input_required: expression
+
 parameters:
-  n_pca_components:
+  - id: n_pca_components
     type: integer
     default: 3
-    lower: 2
-    upper: 10
-  num_runs:
+    distribution:
+      type: uniform
+      lower: 2
+      upper: 10
+  - id: num_runs
     type: integer
     default: 10
-    lower: 10
-    upper: 100
-    distribution: expuniform
-input:
-  format: text
-  required: expression
-output:
-  format: text
-  outputs:
-  - dimred_projection
-  - timings
-wrapper_type: dimred_projection
-doi: 10.1016/j.cels.2017.10.012
-google_scholar_cluster_id: '1665065308896440028'
-trajectory_types:
-- linear
-- bifurcation
-- convergence
-- multifurcation
-- binary_tree
-- tree
-topology_inference: free
-authors:
-- given: Charles A.
-  family: Herring
-  email: charles.a.herring@vanderbilt.edu
-  github: herrinca
-- given: Ken S.
-  family: Lau
-  email: ken.s.lau@vanderbilt.edu
-  github: KenLauLab
-license: GPL-2
-publication_date: '2017-11-15'
-code_url: https://github.com/KenLauLab/pCreode
+    distribution:
+      type: expuniform
+      lower: 10
+      upper: 100
